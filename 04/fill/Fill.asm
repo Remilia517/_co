@@ -3,12 +3,53 @@
 // by Nisan and Schocken, MIT Press.
 // File name: projects/04/Fill.asm
 
-// Runs an infinite loop that listens to the keyboard input.
-// When a key is pressed (any key), the program blackens the screen,
-// i.e. writes "black" in every pixel;
-// the screen should remain fully black as long as the key is pressed. 
-// When no key is pressed, the program clears the screen, i.e. writes
-// "white" in every pixel;
-// the screen should remain fully clear as long as no key is pressed.
+// Repeatedly paints the entire screen black while a key is pressed,
+// and white while no key is pressed.
 
-// Put your code here.
+(LOOP)
+    // Read the keyboard and choose the screen color.
+    @KBD
+    D=M
+    @BLACK
+    D;JNE
+
+(WHITE)
+    @COLOR
+    M=0
+    @PAINT
+    0;JMP
+
+(BLACK)
+    @COLOR
+    M=-1
+
+(PAINT)
+    // Start at SCREEN and paint all 8192 screen words.
+    @SCREEN
+    D=A
+    @ADDRESS
+    M=D
+
+    @8192
+    D=A
+    @COUNT
+    M=D
+
+(PIXEL)
+    @COLOR
+    D=M
+    @ADDRESS
+    A=M
+    M=D
+
+    @ADDRESS
+    M=M+1
+
+    @COUNT
+    MD=M-1
+    @PIXEL
+    D;JGT
+
+    // Check the keyboard again so the screen follows key state.
+    @LOOP
+    0;JMP
